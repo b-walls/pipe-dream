@@ -136,7 +136,7 @@ function checkWin() {
 function getDropletsHTML(count) {
   let html = '';
   for (let i = 1; i <= 3; i++) {
-    html += `<i class="fa-solid fa-droplet" style="color:${i <= count ? '#FFC907' : '#b0b0b0'};font-size:2rem;margin:0 2px"></i>`;
+    html += `<i class="fa-solid fa-droplet" style="color:${i <= count ? '#2E9DF7' : '#b0b0b0'};font-size:2rem;margin:0 2px"></i>`;
   }
   return html;
 }
