@@ -191,10 +191,77 @@ function resetGame() {
   timerEl.textContent = timer;
 }
 
+function showConfetti() {
+  // Simple confetti using canvas
+  const confettiCanvas = document.createElement('canvas');
+  confettiCanvas.id = 'confetti-canvas';
+  confettiCanvas.style.position = 'fixed';
+  confettiCanvas.style.top = 0;
+  confettiCanvas.style.left = 0;
+  confettiCanvas.style.width = '100vw';
+  confettiCanvas.style.height = '100vh';
+  confettiCanvas.style.pointerEvents = 'none';
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+  document.body.appendChild(confettiCanvas);
+
+  const ctx = confettiCanvas.getContext('2d');
+  const confettiColors = ['#FFC907', '#2E9DF7', '#fff', '#159A48', '#8BD1CB'];
+  const confettiPieces = Array.from({length: 120}, () => ({
+    x: Math.random() * confettiCanvas.width,
+    y: Math.random() * -confettiCanvas.height,
+    r: Math.random() * 6 + 4,
+    d: Math.random() * 40 + 10,
+    color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+    tilt: Math.random() * 10 - 10,
+    tiltAngle: 0,
+    tiltAngleIncremental: Math.random() * 0.07 + 0.05
+  }));
+
+  let frame = 0;
+  const maxFrames = 300; // 60fps * 5s = 300 frames
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confettiPieces.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 3, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.d / 5);
+      ctx.stroke();
+    });
+    updateConfetti();
+    frame++;
+    if (frame < maxFrames) {
+      requestAnimationFrame(drawConfetti);
+    } else {
+      confettiCanvas.remove();
+    }
+  }
+
+  function updateConfetti() {
+    confettiPieces.forEach(p => {
+      p.y += Math.cos(frame / 10 + p.d) + 2 + p.r / 2;
+      p.x += Math.sin(frame / 20) * 2;
+      p.tiltAngle += p.tiltAngleIncremental;
+      p.tilt = Math.sin(p.tiltAngle) * 15;
+      if (p.y > confettiCanvas.height) {
+        p.x = Math.random() * confettiCanvas.width;
+        p.y = -10;
+      }
+    });
+  }
+
+  drawConfetti();
+}
+
+// Call showConfetti() when the game is won
 function triggerWin() {
   if (gameWon) return;
   gameWon = true;
   clearInterval(interval);
+  showConfetti();
   showWinModal(stars, timer);
 }
 
