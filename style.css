@@ -1,0 +1,130 @@
+body {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 300;
+    background: #3a3b4c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 360px;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.stars {
+    font-size: 1.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 90px);
+    grid-template-rows: repeat(6, 90px);
+    gap: 2px;
+    background: #404040;
+    padding: 5px;
+    border-radius: 2%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.tile {
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #b3b3b3;
+    border-radius: 0;
+    user-select: none;
+    position: relative;
+}
+
+.tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.col-auto img {
+    max-width: 100px;
+}
+
+.container {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.score-card {
+    min-width: 110px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    color: #fff;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: #4FCB53;
+}
+
+/* Responsive: Medium screens */
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(6, 60px);
+        grid-template-rows: repeat(6, 60px);
+    }
+    .tile {
+        width: 60px;
+        height: 60px;
+    }
+    .col-auto img {
+        max-width: 60px;
+    }
+    .score-card {
+        min-width: 80px;
+        min-height: 60px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Responsive: Small screens */
+@media (max-width: 600px) {
+    .grid {
+        grid-template-columns: repeat(6, 38px);
+        grid-template-rows: repeat(6, 38px);
+    }
+    .tile {
+        width: 38px;
+        height: 38px;
+    }
+    .col-auto img {
+        max-width: 38px;
+    }
+    .score-card {
+        min-width: 50px;
+        min-height: 38px;
+        font-size: 0.8rem;
+    }
+    .container {
+        max-width: 100vw;
+        min-width: 0;
+        padding: 0 2vw;
+    }
+}
+
