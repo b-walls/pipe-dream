@@ -4,7 +4,7 @@ const timerEl = document.getElementById('timer');
 const starsEl = document.getElementById('stars');
 let tiles = [];
 let timer, interval, gameWon, stars;
-const maxTime = 90;
+const maxTime = 60;
 
 let layout = []; // Will be set to a random map on game start
 
@@ -175,7 +175,7 @@ function showWinModal(score, timeLeft) {
 function updateStars() {
   if (timer <= maxTime / 2 && stars === 3) stars = 2;
   if (timer <= maxTime / 4 && stars === 2) stars = 1;
-  if (timer <= 0 && stars === 1) stars = 0;
+  if (timer <= 10 && stars === 1) stars = 0;
   starsEl.innerHTML = getDropletsHTML(stars);
 }
 

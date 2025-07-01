@@ -5,17 +5,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
     font-size: 1.5rem;
-}
-
-.hud {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 360px;
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-    color: #fff;
 }
 
 .stars {
@@ -84,8 +75,7 @@ body {
     background-color: #4FCB53;
 }
 
-/* Responsive: Medium screens */
-@media (max-width: 900px) {
+@media (max-width: 600px) {
     .grid {
         grid-template-columns: repeat(6, 70px);
         grid-template-rows: repeat(6, 70px);
@@ -103,8 +93,28 @@ body {
         font-size: 1.1rem;
     }
 }
-/* Responsive: small screens */
-@media (max-width: 350px) {
+@media (max-width: 450px) {
+    .grid {
+        grid-template-columns: repeat(6, 60px);
+        grid-template-rows: repeat(6, 60px);
+    }
+    .tile {
+        width: 60px;
+        height: 60px;
+    }
+    .col-auto img {
+        min-width: 60px;
+
+    }
+    .score-card {
+        min-width: 60px;
+        min-height: 60px;
+        font-size: 1.1rem;
+    }
+
+}
+
+@media (max-width: 400px) {
     .grid {
         grid-template-columns: repeat(6, 50px);
         grid-template-rows: repeat(6, 50px);
