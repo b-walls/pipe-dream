@@ -6,14 +6,15 @@ let tiles = [];
 let timer, interval, gameWon, stars;
 const maxTime = 90;
 
-const layout = [
-  'rock', 'corner', 'tcross', 'pipe', 'pipe', 'house',
-  'corner', 'tcross', 'pipe', 'corner', 'rock', 'empty',
-  'pipe', 'rock', 'corner', 'empty', 'rock', 'rock',
-  'pipe', 'pipe', 'tcross', 'pipe', 'corner', 'pipe',
-  'corner', 'tcross', 'source', 'pipe', 'pipe', 'empty',
-  'empty', 'corner', 'pipe', 'pipe', 'corner', 'empty'
-];
+let layout = []; // Will be set to a random map on game start
+
+function pickRandomMap() {
+  // Assumes maps are loaded globally as window.PIPE_DREAM_MAPS
+  const maps = window.PIPE_DREAM_MAPS;
+  const idx = Math.floor(Math.random() * maps.length);
+  // Use a copy so shuffling doesn't affect the original
+  return maps[idx].slice();
+}
 
 const directions = {
   up: [0, -1], right: [1, 0], down: [0, 1], left: [-1, 0]
@@ -65,13 +66,21 @@ function buildGrid() {
     const tile = document.createElement('div');
     tile.className = `tile ${type}`;
     tile.dataset.type = type;
-    tile.dataset.rotation = 0;
+
+    // Randomize rotation for pipe types
     const isRotatable = ['pipe', 'corner', 'tcross', 'cross'].includes(type);
-    if (isRotatable) tile.classList.add('rotatable');
+    let rotation = 0;
+    if (isRotatable) {
+      rotation = [0, 90, 180, 270][Math.floor(Math.random() * 4)];
+      tile.classList.add('rotatable');
+    }
+    tile.dataset.rotation = rotation;
+
     let img;
     if (getImageSrc(type, false)) {
       img = document.createElement('img');
       img.src = getImageSrc(type, false);
+      img.style.transform = `rotate(${rotation}deg)`;
       tile.appendChild(img);
     } else if (['source', 'house', 'rock'].includes(type)) {
       img = document.createElement('img');
@@ -175,6 +184,7 @@ function resetGame() {
   stars = 3;
   gameWon = false;
   starsEl.innerHTML = getDropletsHTML(stars);
+  layout = pickRandomMap();
   buildGrid();
   clearInterval(interval);
   interval = setInterval(gameTick, 1000);
@@ -282,6 +292,7 @@ function init() {
   timer = maxTime;
   stars = 3;
   gameWon = false;
+  layout = pickRandomMap();
   buildGrid();
   starsEl.innerHTML = getDropletsHTML(stars);
   timerEl.textContent = timer;
