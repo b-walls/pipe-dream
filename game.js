@@ -4,15 +4,21 @@ const timerEl = document.getElementById('timer');
 const starsEl = document.getElementById('stars');
 let tiles = [];
 let timer, interval, gameWon, stars;
-const maxTime = 60;
+let difficulty = 'medium'; // default
+let maxTime = 60; // default for medium
 
 let layout = []; // Will be set to a random map on game start
+let selectedLevel = 0;
 
-function pickRandomMap() {
-  // Assumes maps are loaded globally as window.PIPE_DREAM_MAPS
+let unlockedLevels = 1; // Default: only level 1 unlocked
+
+// Load unlocked levels from localStorage if available
+if (localStorage.getItem('pipeDreamUnlockedLevels')) {
+  unlockedLevels = parseInt(localStorage.getItem('pipeDreamUnlockedLevels'), 10) || 1;
+}
+
+function pickLevelMap(idx) {
   const maps = window.PIPE_DREAM_MAPS;
-  const idx = Math.floor(Math.random() * maps.length);
-  // Use a copy so shuffling doesn't affect the original
   return maps[idx].slice();
 }
 
@@ -57,6 +63,11 @@ function rotateTile(tile) {
     img.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1)';
     img.style.transform = `rotate(${current}deg)`;
   }
+  // Play woosh sound effect
+  const audio = new Audio('sounds/woosh.mp3');
+  audio.currentTime = 0.15
+  audio.volume = 0.2;
+  audio.play();
 }
 
 function buildGrid() {
@@ -144,6 +155,12 @@ function getDropletsHTML(count) {
 function showWinModal(score, timeLeft) {
   const oldModal = document.getElementById('winModal');
   if (oldModal) oldModal.remove();
+  const nextLevelUnlocked = selectedLevel + 1 < window.PIPE_DREAM_MAPS.length;
+  // Unlock next level if not already unlocked
+  if (nextLevelUnlocked && unlockedLevels <= selectedLevel + 1) {
+    unlockedLevels = selectedLevel + 2;
+    localStorage.setItem('pipeDreamUnlockedLevels', unlockedLevels);
+  }
   const modal = document.createElement('div');
   modal.innerHTML = `
     <div class="modal fade show" id="winModal" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
@@ -158,6 +175,7 @@ function showWinModal(score, timeLeft) {
           </div>
           <div class="modal-footer justify-content-center" style="border-top: none;">
             <button type="button" class="btn" id="resetBtn" style="background-color:#FFC907; color:#fff;">Play Again</button>
+            ${nextLevelUnlocked ? `<button type="button" class="btn" id="nextLevelBtn" style="background-color:#FFC907; color:#fff; margin-left:10px;">Next Level</button>` : ''}
           </div>
         </div>
       </div>
@@ -170,6 +188,14 @@ function showWinModal(score, timeLeft) {
     document.body.classList.remove('modal-open');
     resetGame();
   };
+  if (nextLevelUnlocked) {
+    document.getElementById('nextLevelBtn').onclick = () => {
+      document.getElementById('winModal').remove();
+      document.body.classList.remove('modal-open');
+      selectedLevel++;
+      startGameWithLevel(selectedLevel);
+    };
+  }
 }
 
 function updateStars() {
@@ -184,7 +210,7 @@ function resetGame() {
   stars = 3;
   gameWon = false;
   starsEl.innerHTML = getDropletsHTML(stars);
-  layout = pickRandomMap();
+  layout = pickLevelMap(selectedLevel);
   buildGrid();
   clearInterval(interval);
   interval = setInterval(gameTick, 1000);
@@ -261,6 +287,10 @@ function triggerWin() {
   if (gameWon) return;
   gameWon = true;
   clearInterval(interval);
+  // Play win sound effect
+  const winAudio = new Audio('sounds/win.mp3');
+  winAudio.volume = 0.7;
+  winAudio.play();
   showConfetti();
   showWinModal(stars, timer);
 }
@@ -356,17 +386,102 @@ function showInfoModal() {
 
 // --- INIT ---
 function init() {
+  showLevelSelect();
+  document.getElementById('restart').addEventListener('click', () => startGameWithLevel(selectedLevel));
+  document.getElementById('info').addEventListener('click', showInfoModal);
+  document.getElementById('level-select-btn').addEventListener('click', showLevelSelect);
+}
+
+function setDifficulty(diff) {
+  difficulty = diff;
+  if (diff === 'easy') maxTime = 90;
+  else if (diff === 'medium') maxTime = 60;
+  else if (diff === 'hard') maxTime = 30;
+  timer = maxTime;
+  timerEl.textContent = timer;
+}
+
+function showLevelSelect() {
+  const modal = document.getElementById('level-select-modal');
+  const btns = document.getElementById('level-buttons');
+  btns.innerHTML = '';
+  window.PIPE_DREAM_MAPS.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = `Level ${i + 1}`;
+    btn.className = 'btn';
+    btn.style.backgroundColor = i < unlockedLevels ? '#FFC907' : '#b0b0b0';
+    btn.style.color = '#fff';
+    btn.style.fontWeight = 'bold';
+    btn.disabled = i >= unlockedLevels;
+    btn.onclick = () => {
+      selectedLevel = i;
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+      showDifficultySelect(i); // <-- Show difficulty modal
+    };
+    btns.appendChild(btn);
+  });
+  modal.style.display = 'block';
+  document.body.classList.add('modal-open');
+}
+
+function showDifficultySelect(levelIdx) {
+  // Remove existing modal if present
+  const oldModal = document.getElementById('difficulty-select-modal');
+  if (oldModal) oldModal.remove();
+
+  // Create modal
+  const modal = document.createElement('div');
+  modal.id = 'difficulty-select-modal';
+  modal.innerHTML = `
+    <div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center" style="background:#3a3b4c;">
+          <div class="modal-header text-center" style="border-bottom: none;">
+            <h5 class="modal-title w-100" style="color:#FFC907;">Select Difficulty</h5>
+          </div>
+          <div class="modal-body">
+            <button class="btn" style="background-color:#159A48; color:#fff; margin:10px;" id="easyBtn">Easy</button>
+            <button class="btn" style="background-color:#2E9DF7; color:#fff; margin:10px;" id="mediumBtn">Medium</button>
+            <button class="btn" style="background-color:#FFC907; color:#fff; margin:10px;" id="hardBtn">Hard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.body.classList.add('modal-open');
+
+  document.getElementById('easyBtn').onclick = () => {
+    setDifficulty('easy');
+    modal.remove();
+    document.body.classList.remove('modal-open');
+    startGameWithLevel(levelIdx);
+  };
+  document.getElementById('mediumBtn').onclick = () => {
+    setDifficulty('medium');
+    modal.remove();
+    document.body.classList.remove('modal-open');
+    startGameWithLevel(levelIdx);
+  };
+  document.getElementById('hardBtn').onclick = () => {
+    setDifficulty('hard');
+    modal.remove();
+    document.body.classList.remove('modal-open');
+    startGameWithLevel(levelIdx);
+  };
+}
+
+function startGameWithLevel(levelIdx) {
   timer = maxTime;
   stars = 3;
   gameWon = false;
-  layout = pickRandomMap();
+  layout = pickLevelMap(levelIdx);
   buildGrid();
   starsEl.innerHTML = getDropletsHTML(stars);
   timerEl.textContent = timer;
   clearInterval(interval);
   interval = setInterval(gameTick, 1000);
-  document.getElementById('restart').addEventListener('click', resetGame);
-  document.getElementById('info').addEventListener('click', showInfoModal);
 }
 
 init();

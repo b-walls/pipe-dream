@@ -10,6 +10,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <div id="level-select-modal" class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center" style="background:#3a3b4c;">
+        <div class="modal-header text-center" style="border-bottom: none;">
+          <h5 class="modal-title w-100" style="color:#FFC907;">Select a Level</h5>
+        </div>
+        <div class="modal-body">
+          <div id="level-buttons" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <div class="container text-center" style="max-width: 50vw; min-width: 340px; margin-top: 10px;">
   <div class="row justify-content-center align-items-center g-1 flex-nowrap" style="background:#3a3b4c; border-radius:1rem; padding: 10px;" id="header-row">
@@ -27,6 +39,9 @@
     <button id="info" class="btn shadow-lg" style="background-color: #FFC907; color: #fff; padding-left: 15px; padding-right: 15px;">
       <i class="fa-solid fa-question"></i>
     </button>
+    <button id="level-select-btn" class="btn shadow-lg" style="background-color: #FFC907; color: #fff; padding-left: 15px; padding-right: 15px;">
+      <i class="fa-solid fa-list-ol"></i>
+    </button>
   </div>
 
   <div class="col-auto px-4" id="timer-stars">
@@ -39,6 +54,28 @@
 
 
   <div class="grid" id="grid"></div>
+  <!-- Charity Water Button Section -->
+  <div style="width:100%; display:flex; justify-content:center; margin-top:30px; margin-bottom:20px;">
+    <a href="https://www.charitywater.org/" target="_blank"
+      style="
+        display:inline-block;
+        padding: 10px 40px;
+        font-size:1.4rem;
+        font-weight:bold;
+        background-color:#FFC907;
+        color:#fff;
+        border:none;
+        border-radius:1rem;
+        text-decoration:none;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        transition: background 0.2s;
+      "
+      onmouseover="this.style.backgroundColor='#e6b800'"
+      onmouseout="this.style.backgroundColor='#FFC907'"
+    >
+      Visit Charity Water
+    </a>
+  </div>
   <script src="maps.js"></script>
   <script src="game.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
